@@ -44,34 +44,56 @@ class MediaController extends Controller
     {
         //return ("hello");
         if ($request->hasFile('media_file')) {
-        $data = json_decode($request->input("data"));
-        
-        
-        $media = new Media;
-        $media->owner_id = $data->owner_id;
-        $media->owner_type = $data->owner_type;
-        $media->type = $data->type;
-        $media->file_name = $data->file_name;
-
-        $name = $request->file('media_file')->getClientOriginalName();
-        //$extension = $request->file('media_file')->getClientOriginalExtension();
-        
-        $path = $request->file('media_file')->storeAs("media/".$media->owner_type."/".$media->type, $media->file_name);
-        $media->url = $path;
-
-        $media->name = $name;
-
-        $media->save(); 
-        //return array('status'=>"success", 'data'=>"$media");
-        return UtilityController::generalResponse("status", Media::find($media->id));
-        //return array("status"=>"Success: $media->type uploaded", "data"=>Media::find($media->id));
-        //return array("status"=>"success", "data"=>$name." data:".$data);
+            $data = json_decode($request->input("data"));
+            
+            
+            $media = new Media;
+            $media->owner_id = $data->owner_id;
+            $media->owner_type = $data->owner_type;
+            $media->type = $data->type;
+            $media->file_name = $data->file_name;
+            
+            $name = $request->file('media_file')->getClientOriginalName();
+            //$extension = $request->file('media_file')->getClientOriginalExtension();
+            
+            $path = $request->file('media_file')->storeAs("media/".$media->owner_type."/".$media->type, $media->file_name);
+            $media->url = $path;
+            
+            $media->name = $name;
+            
+            $media->save(); 
+            //return array('status'=>"success", 'data'=>"$media");
+            return UtilityController::generalResponse("status", Media::find($media->id));
+            //return array("status"=>"Success: $media->type uploaded", "data"=>Media::find($media->id));
+            //return array("status"=>"success", "data"=>$name." data:".$data);
         } else {
             $reponse = array("status"=>"error: file not found", "data"=>"");
             return $reponse;
         } 
 
     }
+	
+	public function storeMedia(Request $request, $media) {
+		if ($request->hasFile('media_file')) {
+            $data = json_decode($request->input("data"));
+			
+			$name = $request->file('media_file')->getClientOriginalName();
+            //$extension = $request->file('media_file')->getClientOriginalExtension();
+            
+            $path = $request->file('media_file')->storeAs("media/".$media->owner_type."/".$media->type, $media->file_name);
+            
+			$media->url = $path;
+            $media->name = $name;
+            
+            $media->save(); 
+            //return array('status'=>"success", 'data'=>"$media");
+            return UtilityController::generalResponse("success", "uploaded challenge placed successfully");
+            //return array("status"=>"Success: $media->type uploaded", "data"=>Media::find($media->id));
+            //return array("status"=>"success", "data"=>$name." data:".$data);
+        } else {
+            return UtilityController::generalResponse("failed", "could not find media file");
+        } 
+	}
 
     public function simpleUpload(Request $request) {
         $name = $request->file('media_file')->store("media/android");

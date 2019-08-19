@@ -74,9 +74,9 @@
 
         <main class="py-4">
             <form method="POST" enctype="multipart/form-data" action="http://localhost/daregame/public/upload_file/">
-            <input type="file" name="media_file">
-            <input type="submit" />
-        </form>
+                <input type="file" name="media_file">
+                <input type="submit" />
+            </form>
             @yield('content')
         </main>
     </div>

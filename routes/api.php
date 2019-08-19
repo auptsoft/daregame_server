@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,7 +53,7 @@ Route::delete('/user', function(Request $request){
 });
 
 
-Route::post('/search/{table}', 'UtilityController@search')->middleware('auth:api');
+Route::post('/search/{table}', 'UtilityController@search'); //->middleware('auth:api');
 
 Route::post('/comment', 'CommentController@addComment')->middleware('auth:api');
 Route::delete('/comment/{comment_id}', 'CommentController@removeComment')->middleware('auth:api');
@@ -62,10 +63,15 @@ Route::get('/challenge', 'ChallengeController@index'); //->middleware('auth:api'
 Route::post('/challenge', 'ChallengeController@store')->middleware('auth:api');
 Route::post('/challenge/update/{id}', 'ChallengeController@update')->middleware('auth:api');
 Route::delete('/challenge/{id}', 'ChallengeController@delete')->middleware('auth:api');
-Route::post('/challenge/search', 'ChallengeController@search')->middleware('auth:api');
+Route::post('/challenge/search', 'ChallengeController@search'); //->middleware('auth:api');
 Route::post('/challenge/{challenge_id}/attach_tags', 'ChallengeController@attachTags')->middleware('auth:api');
 Route::post('/challenge/{challenge_id}/detach_tags', 'ChallengeController@detachTags')->middleware('auth:api');
 Route::get('/challenge/{challenged_id}/tags', 'ChallengeController@getTags')->middleware('auth:api');
+
+Route::post('/uploadNewChallenge', 'ChallengeController@storeWithMedia')->middleware('auth:api');
+//Route::post('/challenge/storeAttempt/{id}', "ChallengeController@storeAttempt")->middleware('auth:api');
+
+Route::post('/challenge/storeAttempt/{id}', "ChallengeController@storeAttempt")->middleware('auth:api');
 
 Route::post('follow/{id}', 'FollowingController@follow')->middleware('auth:api');
 Route::delete('follow/{id}', 'FollowingController@unfollow')->middleware('auth:api');
@@ -74,7 +80,7 @@ Route::get('followings/{id}', 'FollowingController@followings');
 
 Route::post('like/{likeable_type}/{likeable_id}', 'LikeController@like')->middleware('auth:api');
 Route::delete('like/{likeable_type}/{likeable_id}', 'LikeController@unlike')->middleware('auth:api');
-
+Route::post('toggleLike/{likeable_type}/{likeable_id}', 'LikeController@toggleLike')->middleware('auth:api');
 
 
 Route::post('/media', "MediaController@store");
@@ -95,13 +101,29 @@ Route::post('/tag', "TagController@store")->middleware('auth:api');
 Route::get('/tag/{id}', "TagController@show")->middleware('auth:api');
 Route::delete('/tag/{id}', "TagController@delete")->middleware('auth:api');
 Route::get('/tag', "TagController@index");
+Route::post('/tag/search', "TagController@search");
 
 Route::post('/register', 'UserController@store');
 Route::post('/login', 'UserController@login');
-Route::get('/profile', 'UserController@profile'); //->middleware('auth:api');
+Route::get('/profile', 'UserController@profile')->middleware('auth:api');
 Route::get('/profile/details', 'UserController@details')->middleware('auth:api');
 Route::get('/allusers', 'UserController@index');
+Route::get('/user/search', 'UserController@search'); //->middleware('auth:api');
+Route::get('/user/attributes', 'UserController@getAttributes');
 
 Route::post('/message', 'MessageController@store');
 
 Route::post('/report', 'ReportController@store');
+
+Route::get('/email/verify/{id}', 'VerificationApiController@verify')->name('verificationapi.verify');
+Route::get('/email/resend', 'VerificationApiController@resend')->name('verificationapi.resend');
+
+Route::resource('/userAttribute', 'UserAttributeController');
+
+Route::get('/v', function() {
+    $user = User::find(8);
+    $user->sendApiEmailVerificationNotification();
+    return $user;
+});
+
+Route::get('/tagTest', 'TagController@testAttachTags');

@@ -11,5 +11,5 @@ class ChallengeTag extends Model
 
     protected $dates = ['deleted_at'];
 
-    //protected $table = "challenge_tag";
+    protected $table = "challenge_tag";
 }

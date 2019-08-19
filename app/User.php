@@ -8,13 +8,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Notifications\VerifyApiEmail;
 
 //use App\Following;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, Notifiable;
-    use SoftDeletes;
+    use HasApiTokens, Notifiable, SoftDeletes;
 
     protected $dates = ['deleted_at'];
 
@@ -24,7 +24,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'username', 'password',
     ];
 
     /**
@@ -37,7 +37,8 @@ class User extends Authenticatable
     ];
 	
 	protected $appends = [
-        'details',
+        //'details',
+        'attributes',
         'gender',
         'birthday',
 		'followings',
@@ -47,6 +48,10 @@ class User extends Authenticatable
 
     public function details() {
         return $this->hasOne('App\UserDetails');
+    }
+
+    public function attributes() {
+        return $this->hasMany('App\UserAttribute');
     }
 
     public function bankDetails() {
@@ -71,7 +76,12 @@ class User extends Authenticatable
 	
 	public function getDetailsAttribute() {
 		return $this->details()->get()->first();
-	}
+    }
+    
+    public function getAttributesAttribute() {
+        $attributes = $this->attributes()->get();
+        return $attributes;
+    }
 	
 	public function getGenderAttribute() {
 		if($this->details()->get()->first()) {
@@ -118,5 +128,11 @@ class User extends Authenticatable
 		if($this->details()->get()->first()) {
 			return $this->details()->get()->first()->profile_picture_url;
 		} else return null;
-	}
+    }
+    
+    public function sendApiEmailVerificationNotification()
+    {
+        //return "hello";
+        $this->notify(new VerifyApiEmail);
+    }
 }

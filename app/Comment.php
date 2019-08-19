@@ -10,7 +10,9 @@ class Comment extends Model
     use SoftDeletes;
 	
 	protected $appends = [
-		'media'
+        'media',
+        'user',
+        'commentable'
 	];
 
     protected $dates = ['deleted_at'];
@@ -25,5 +27,13 @@ class Comment extends Model
 	
 	public function getMediaAttribute(){
 		return $this->media()->get();
-	}
+    }
+    
+    public function getUserAttribute() {
+        return User::find($this->attributes['user_id']);
+    }
+
+    public function getCommentableAttribute() {
+        return null; // return $this->commentable()->get();
+    }
 }

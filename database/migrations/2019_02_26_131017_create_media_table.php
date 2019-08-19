@@ -15,12 +15,13 @@ class CreateMediaTable extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('url');
             $table->string('name')->default('');
+			$table->string('url');
             $table->string('type');
             $table->string('description')->default('');
-            $table->integer('owner_id');
+            $table->integer('owner_id');			
             $table->string('owner_type');
+			$table->string('media_source');
             $table->string('file_name');
             $table->string('extra')->default(''); //when used with 'challenge' as owner_type it must be either; 'chanllenger' or 'challenged'
             $table->timestamps();

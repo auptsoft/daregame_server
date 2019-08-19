@@ -17,6 +17,6 @@ class Media extends Model
     }
 
     public function getFullUrlAttribute() {
-        return asset($this->attributes['url']);
+        return env('STORAGE_URL').$this->attributes['url'];
     }
 }

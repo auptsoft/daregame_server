@@ -65,7 +65,7 @@ class UserDetailsController extends Controller
      */
     public function show($id)
     {
-        return UtilityController::GeneralResponse(UserDetails::find($id));
+        return UtilityController::GeneralResponse("success", UserDetails::find($id));
     }
 
     /**

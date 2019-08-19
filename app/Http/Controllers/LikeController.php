@@ -40,4 +40,25 @@ class LikeController extends Controller
             return UtilityController::GeneralResponse("failed", "Item is not currently in your likes");
         }
     }
+
+    public function toggleLike($likeable_type, $likeable_id) {
+        $lk = Like::where([
+            ['likeable_type', '=', $likeable_type],
+            ['likeable_id', '=', $likeable_id]
+        ])->get()->first();
+
+        if(!$lk) {
+            $like = new Like;
+            $like->user_id = Auth::user()->id;
+            $like->likeable_type = $likeable_type;
+            $like->likeable_id = $likeable_id;
+
+            $like->save();
+            return UtilityController::GeneralResponse("liked", "Item added to your likes");
+        } else {
+            $lk->delete();
+            return UtilityController::GeneralResponse("unliked", "Item removed to your likes");
+        }
+    
+    }
 }

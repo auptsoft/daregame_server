@@ -27,6 +27,19 @@
        .header-text {
            font-size:20px;
        }
+
+       .text-1 {
+
+       }
+
+       .text-2 {
+
+       }
+
+       .gotoLogin {
+           margin-top: 20px;
+           display: none;
+       }
     </style>
 </head>
 <body>
@@ -35,22 +48,37 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Verify Your Email Address') }}</div>
+                <div class="card-header">{{ __('Email Verified') }}</div>
 
                 <div class="card-body">
-                    @if (session('resent'))
-                        <div class="alert alert-success" role="alert">
-                            {{ __('A fresh verification link has been sent to your email address.') }}
-                        </div>
-                    @endif
+                    <div class="text-1 alert alert-success"> {{ __('Welcome! Your email has been verified') }} </div>
+                    <div class="text-2"> You can now login in the app </div>
 
-                    {{ __('Before proceeding, please check your email for a verification link.') }}
-                    {{ __('If you did not receive the email') }}, <a href="{{ route('verification.resend') }}">{{ __('click here to request another') }}</a>.
+                    <button  id="gotoLogin" class="gotoLogin btn btn-success" onclick="gotoLogin()"> Login </button>
                 </div>
             </div>
         </div>
     </div>
   </div>
  </div>
+   <script>
+      /*var Android = {
+          gotoLogin:function() {
+              alert('hello');
+          } 
+      }; */
+
+      var gt = function gotoLogin() {
+          Android.gotoLogin();
+      };
+
+      window.onload = function() {
+        var gotoLogin = document.getElementById('gotoLogin');
+        if( Android != undefined) {
+              gotoLogin.style = 'display: block';
+              gotoLogin.onclick = gt;
+        } 
+      }
+   </script>
 </body>
 </html>

@@ -54,7 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'asset_url' => env('ASSET_URL', 'http://localhost/daregame/storage/app/public'),
+    'asset_url' => env('ASSET_URL', null),
+    //'http://192.168./daregame/storage/app/public'
 
     /*
     |--------------------------------------------------------------------------

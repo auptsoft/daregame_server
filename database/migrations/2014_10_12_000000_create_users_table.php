@@ -20,6 +20,11 @@ class CreateUsersTable extends Migration
             $table->string('username', 100)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            $table->string('profile_picture_url')->default('');
+            $table->string('cover_picture_url')->default('');
+            $table->string('bio')->default('');
+            $table->string('country')->default('');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

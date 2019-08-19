@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 use App\User;
 
@@ -44,8 +45,8 @@ class UserController extends Controller
             $user->name = $userIn->name;
             $user->email = $userIn->email;
 			$user->username = $userIn->username;
-            $user->password = $userIn->password;
-            $u = User::where('email', $userIn->email)->get()->first();
+            $user->password = Hash::make($userIn->password);
+            //$u = User::where('email', $userIn->email)->get()->first();
 			
 			if(User::where('username', $userIn->username)->get()->first()){
 				return UtilityController::generalResponse("failed", "username already used");
@@ -75,7 +76,14 @@ class UserController extends Controller
 
             if(Auth::attempt(['email'=>$userIn->email, 'password'=>$userIn->password])) {
                 $token = Auth::user()->createToken('App personal')->accessToken;
-                return UtilityController::generalResponse("success", $token);
+                return UtilityController::generalResponse("success", $token); 
+
+                /*if (Auth::user()->hasVerifiedEmail()) {
+                    return UtilityController::GeneralResponse("success", Auth::user());
+                } else {
+                    return UtilityController::GeneralResponse("failed", "Email not verified");
+                } */
+                
             } else {
                 return UtilityController::generalResponse("failed", "incorrect email or password");
             }
@@ -101,13 +109,26 @@ class UserController extends Controller
 			return UtilityController::GeneralResponse("success", $details);
 		} else {
 			return UtilityController::GeneralResponse("failed", "details does not exist for this user");
-		
+	
 		}
     }
     
     public function profile() {
-        return UtilityController::GeneralResponse("success", Auth::user());
+        if (Auth::user()->hasVerifiedEmail()) {
+            return UtilityController::GeneralResponse("success", Auth::user());
+        } else {
+            Auth::user()->sendApiEmailVerificationNotification();
+            return UtilityController::GeneralResponse("not_verified", Auth::user());
+        }
+        
     }
+
+    public function getAttributes($id) {
+        $attr = User::find($id)->attributes()->get();
+        return UtilityController::GeneralResponse('success', $attr);
+    }
+
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -141,5 +162,26 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public static function search(Request $request) {
+        $query = $request->input('query');
+
+        //return $query;
+        $users = User::where([["username", "LIKE", "%$query%"]])
+                    ->get(['username', 'id'])->take(5);
+        
+        $outputUsers = $users->reject(function($value, $key){
+            if ($value->username == "admin") return true;
+            return false;
+        })->flatten();
+
+        return UtilityController::GeneralResponse("success", $outputUsers);
+        // $query = array();
+        // foreach ($data as $item) {
+        //     //array_push($query, array($item->column, $item->operator, $item->value));
+        // }
+
+        // array_push($query, array("deleted_at", "=", null));
     }
 }

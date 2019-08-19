@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Tag;
+use App\ChallengeTag;
+use App\Challenge;
 
 class TagController extends Controller
 {
@@ -18,7 +20,8 @@ class TagController extends Controller
      */
     public function index()
     {
-        return UtilityController::generalResponse("success",Tag::all());
+        //return "hello";
+        return UtilityController::generalResponse("success", Tag::all());
     }
 
     /**
@@ -121,5 +124,53 @@ class TagController extends Controller
     public function destroy($id)
     {
         
+    }
+
+
+    public function testAttachTags() {
+        $tags = Tag::all()->take(5);
+        
+        TagController::attachTagsToChallenge($tags, 3);
+    }
+
+    public static function attachTagsToChallenge($tags, $challengeId) {
+        
+        $challenge = Challenge::find($challengeId);
+        if ($challenge) {
+            foreach ($tags as $t) {
+                $tag = TagController::getOrInsert($t->title);
+                 
+                $ct = new ChallengeTag;
+                $ct->tag_id = $tag->id;
+                $ct->challenge_id = $challengeId;
+                $ct->save();
+                //return true;
+            }
+        }
+    }
+
+
+    public static function getOrInsert($tagTitle) {
+        //return true;
+        $tag = Tag::where([["title", "=", $tagTitle]])->get()->first();
+        if ($tag) {
+            return $tag;
+        } else {
+            $tag = new Tag;
+            $tag->title = $tagTitle;
+            $tag->description = $tagTitle." Description";
+            $tag->save();
+            return $tag;
+        }
+    }
+
+    public function search(Request $request) {
+        $query = json_decode($request->input('data'));
+
+        $tags = Tag::where([["title", "LIKE", "%$query%"]])->get(['title', 'id'])->take(20);
+
+        //return "Hello";
+        return UtilityController::GeneralResponse("success", $tags);
+
     }
 }

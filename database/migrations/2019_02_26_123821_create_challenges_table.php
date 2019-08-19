@@ -21,13 +21,14 @@ class CreateChallengesTable extends Migration
             $table->string('description');
             $table->double('price');
             $table->integer('category_id');
-			$table->string('type')->default('paid'); //can be 'paid' or 'free'
-            $table->string('accept_type'); //can be 'image' , 'video', or 'audio'. Combination are seperated with '|' e.g 'image|video'
-            $table->string('content_source')->default('live'); //can be 'live', 'file', 'live|file'
+			$table->string('accept_media_type')->default('image'); //can be 'image' , 'video', or 'audio'. Combination are seperated with '|' e.g 'image|video'
+			$table->string('request_media_type')->default('image'); //can be 'image' , 'video', or 'audio'. Combination are seperated with '|' e.g 'image|video'
+			$table->string('media_source')->default('live'); //can be 'live' or 'gallery'                 
             $table->timestamp('accepted_at')->nullable();
             $table->timestamp('performed_at')->nullable();
             $table->timestamp('max_acceptance_at')->nullable();
-            $table->timestamps();
+            $table->string('free_attempt')->default(false); //can be 'paid' or 'free'
+			$table->timestamps();
             $table->softDeletes();
         });
     }
